@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>小稳神微信运动</title>
+  <style>
+    body,
+    html {
+      font-family: Arial, sans-serif;
+      background-color: #ffffff;
+      display: flex;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      overflow: hidden;
+    }
+
+    .form-container {
+      margin-top: 1%;
+      background-color: #fff;
+      padding: 2px 20px;
+      border-radius: 8px;
+      width: 300px;
+    }
+
+    .form-container h3 {
+      text-align: center;
+      margin-bottom: 10px;
+      color: #333;
+    }
+
+    .form-container div {
+      margin-bottom: 15px;
+    }
+
+    .form-container label {
+      display: block;
+      margin-bottom: 5px;
+      color: #555;
+      font-size: 12px
+    }
+
+    .form-container input[type="text"],
+    .form-container input[type="number"],
+    .form-container input[type="password"] {
+      width: 100%;
+      padding: 7px;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .form-container button {
+      width: 100%;
+      padding: 7px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .form-container button:hover {
+      background-color: #0056b3;
+    }
+
+    .error {
+      color: red;
+      font-size: 12px;
+    }
+
+    /* 加载蒙层 */
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #2c2c2c41;
+      display: flex;
+      justify-content: center;
+      /* align-items: center; */
+      z-index: 1000;
+      /* 确保蒙层在最上层 */
+    }
+
+    .loader {
+      background-color: #fff;
+      width: 80%;
+      height: 20px;
+      padding: 10px;
+      border-radius: 4px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      font-size: 14px;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+
+    /* 结果蒙层样式 */
+    .result-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #2c2c2c41;
+      display: flex;
+      justify-content: center;
+      /* align-items: center; */
+      z-index: 1000;
+      /* 确保蒙层在最上层 */
+    }
+
+    .result-loader {
+      background-color: #9bff6c;
+      width: 80%;
+      height: 20px;
+      padding: 10px;
+      border-radius: 4px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      font-size: 14px;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+
+    .password-container {
+      display: flex;
+      align-items: center;
+      /* 水平两边对齐 */
+      justify-content: space-between;
+    }
+
+    .password {
+      width: 100% !important;
+      padding: 7px;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .toggle-label {
+      width: 90px;
+    }
+
+    .toggle {
+      margin-left: 5px;
+    }
+
+    .toggle-text {
+      font-size: 12px;
+    }
+  </style>
+</head>
+
+<body>
+  <div>
+    <div class="form-container">
+      <h3>小稳神微信运动</h3>
+      <div>
+        <label for="account">Zepp Life账号：</label>
+        <input type="text" id="account" placeholder="请输入账号" required>
+        <div id="accountError" class="error"></div>
+      </div>
+      <div>
+        <label for="password">Zepp Life密码：</label>
+        <div class="password-container">
+          <input class="password" type="password" id="password" placeholder="请输入密码" required>
+          <label for="togglePassword" class="toggle-label">
+            <input class="toggle" type="checkbox" id="togglePassword">
+            <span class="toggle-text">显示</span>
+          </label>
+        </div>
+        <div id="passwordError" class="error"></div>
+      </div>
+      <div>
+        <label for="steps">修改的步数：</label>
+        <input type="number" id="steps" placeholder="请输入步数" required>
+        <div id="stepsError" class="error"></div>
+      </div>
+      <div>
+        <button id="submitBtn">提交</button>
+      </div>
+      <div style="margin-top:10px; font-size: 14px;">
+        <span style="font-size: 16px;">注意：</span><br>
+        1、<span style="color: red">此工具仅供学习交流使用，切勿用于非法用途，否则后果自负。</span><br>
+        <span>2、如修改完成但步数没有变化，请检查账号密码是否正确</span><br>
+        <span>3、<a href="https://blog.csdn.net/m0_62407354/article/details/132707440" target="_blank">教程（教程文档中API接口已作废）</a></span><br>
+        <span>4、源码在github：<a href="https://github.com/xws666/wechat-movement" target="_blank">xws666（科学上网）</a></span><br>
+        <span>5、其他问题反馈邮箱:<a href="mailto:3253952854@qq.com">3253952854@qq.com</a></span><br>
+      </div>
+    </div>
+
+  </div>
+
+
+  <!-- 加载蒙层 -->
+  <div id="overlay" class="overlay" style="display: none;">
+    <div class="loader">
+      正在修改，请稍后(需等待5-10秒)
+      <span id="loaderText"></span>
+    </div>
+  </div>
+
+  <!-- 结束蒙层 -->
+  <div id="resultOverlay" class="result-overlay" style="display: none;">
+    <div class="result-loader" id="resultMessage">
+      修改完成
+    </div>
+  </div>
+  <script>
+    // 获取复选框元素
+    const togglePassword = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('password');
+
+    // 添加事件监听器
+    togglePassword.addEventListener('change', function () {
+      // 切换密码输入框的类型
+      const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+      passwordInput.setAttribute('type', type);
+    });
+
+    document.getElementById('submitBtn').addEventListener('click', function (event) {
+      event.preventDefault(); // 阻止表单默认提交行为
+
+      const account = document.getElementById('account').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const steps = document.getElementById('steps').value.trim();
+
+      let isValid = true;
+
+      // 清除之前的错误信息
+      document.getElementById('accountError').textContent = '';
+      document.getElementById('passwordError').textContent = '';
+      document.getElementById('stepsError').textContent = '';
+
+      if (!account) {
+        document.getElementById('accountError').textContent = '账号不能为空';
+        isValid = false;
+      }
+
+      if (!password) {
+        document.getElementById('passwordError').textContent = '密码不能为空';
+        isValid = false;
+      }
+
+      if (!steps) {
+        document.getElementById('stepsError').textContent = '步数不能为空';
+        isValid = false;
+      }
+
+      if (isValid) {
+        // 显示加载蒙层
+        document.getElementById('overlay').style.display = 'flex';
+
+        // 初始化加载提示文本
+        let dotCount = 0;
+        const loaderText = document.getElementById('loaderText');
+        const intervalId = setInterval(() => {
+          dotCount = (dotCount + 1) % 4; // 0, 1, 2, 3
+          loaderText.textContent = `${'.'.repeat(dotCount)}`;
+        }, 500); // 每500毫秒更新一次
+
+        const url = `https://steps.api.030101.xyz/api?account=${encodeURIComponent(account)}&password=${encodeURIComponent(password)}&steps=${encodeURIComponent(steps)}`;
+        
+        fetch(url)
+          .then(response => response.json())
+          .then(data => {
+            // 关闭加载蒙层
+            document.getElementById('overlay').style.display = 'none';
+            // 显示结果蒙层
+            document.getElementById('resultOverlay').style.display = 'flex';
+
+            // 3秒后隐藏结果蒙层
+            setTimeout(() => {
+              document.getElementById('resultOverlay').style.display = 'none';
+            }, 5000);
+          })
+          .catch((error) => {
+            // 关闭加载蒙层
+            document.getElementById('overlay').style.display = 'none';
+            // 显示结果蒙层
+            document.getElementById('resultOverlay').style.display = 'flex';
+
+            // 3秒后隐藏结果蒙层
+            setTimeout(() => {
+              document.getElementById('resultOverlay').style.display = 'none';
+            }, 5000);
+          })
+      }
+    });
+  </script>
+</body>
+
+</html>
